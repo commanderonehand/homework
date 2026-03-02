@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-index-php 
+data:
+  index.html: <?php echo "<h1>Hello, i am pod " . gethostname() . "</h1>";?>
