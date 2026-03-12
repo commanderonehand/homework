@@ -11,4 +11,4 @@ jobs:
       - name: Run tests
         run: |
           cd Volha_Zhukova/04.GitOps
-          python -m unittest Volha_Zhukova/04.GitOps/test.py
+          python -m unittest test.py
