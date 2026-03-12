@@ -1,0 +1,17 @@
+name: run-script
+
+on:
+  push:
+    branches: 
+    -  master
+
+jobs:
+  run-hello:
+    runs-on: windows-latest
+    
+    steps:
+    - name: checkout 
+      uses: actions/checkout@v4
+      
+    - name: run script
+      run: python hello.py
