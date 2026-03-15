@@ -8,26 +8,24 @@ jobs:
     steps:
       - name: Setup kubectl
         run: |
-          # Устанавливаем путь к конфигу
-          export KUBECONFIG=/home/user/.kube/config-k8s
-          echo "KUBECONFIG=/home/user/.kube/config-k8s" >> $GITHUB_ENV
-          
-          # Проверяем что конфиг существует
+          #Проверяем конфиг
           echo "=== Checking kubeconfig ==="
           ls -la /home/user/.kube/config-k8s
           
-          # Проверяем конфиг
-          echo "=== Kubeconfig content ==="
-          kubectl config view --minify
-          
-          # Проверяем доступные контексты
+          # Получаем список контекстов
           echo "=== Available contexts ==="
-          kubectl config get-contexts
+          CONTEXTS=$(kubectl --kubeconfig=/home/user/.kube/config-k8s config get-contexts -o name)
+          echo "$CONTEXTS"
           
-          # Проверяем подключение к кластеру
-          echo "=== Testing connection ==="
-          kubectl cluster-info
-          kubectl get nodes
+          # Берем первый контекст из списка
+          FIRST_CONTEXT=$(echo "$CONTEXTS" | head -1)
+          if [ -n "$FIRST_CONTEXT" ]; then
+            echo "Using context: $FIRST_CONTEXT"
+            echo "KUBE_CONTEXT=$FIRST_CONTEXT" >> $GITHUB_ENV
+          else
+            echo "No contexts found!"
+            exit 1
+          fi
       - name: Check pods
         id: monitor
         #env:
