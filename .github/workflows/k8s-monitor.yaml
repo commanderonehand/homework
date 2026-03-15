@@ -9,7 +9,7 @@ jobs:
       - name: Check pods
         id: monitor
         env:
-          KUBECONFIG: /home/user/.kube/config
+          KUBECONFIG: /home/user/.kube/config-k8s
         run: |
           PROBLEM_PODS=$(kubectl get pods -A | grep -E "CrashLoopBackOff|Error|Evicted|Pending|ImagePullBackOff|CreateContainerError" || true)
           
