@@ -8,17 +8,26 @@ jobs:
     steps:
       - name: Setup kubectl
         run: |
+          # Устанавливаем путь к конфигу
           export KUBECONFIG=/home/user/.kube/config-k8s
-          echo "KUBECONFIG=$KUBECONFIG" >> $GITHUB_ENV
+          echo "KUBECONFIG=/home/user/.kube/config-k8s" >> $GITHUB_ENV
           
-          echo "Testing connection..."
-          kubectl cluster-info || {
-            echo "Cannot connect to cluster"
-            echo "Current context:"
-            kubectl config current-context
-            echo "Available contexts:"
-            kubectl config get-contexts
-          }
+          # Проверяем что конфиг существует
+          echo "=== Checking kubeconfig ==="
+          ls -la /home/user/.kube/config-k8s
+          
+          # Проверяем конфиг
+          echo "=== Kubeconfig content ==="
+          kubectl config view --minify
+          
+          # Проверяем доступные контексты
+          echo "=== Available contexts ==="
+          kubectl config get-contexts
+          
+          # Проверяем подключение к кластеру
+          echo "=== Testing connection ==="
+          kubectl cluster-info
+          kubectl get nodes
       - name: Check pods
         id: monitor
         #env:
