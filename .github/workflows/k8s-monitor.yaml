@@ -6,10 +6,23 @@ jobs:
   monitor:
     runs-on: self-hosted
     steps:
+      - name: Setup kubectl
+        run: |
+          export KUBECONFIG=/home/user/.kube/config-k8s
+          echo "KUBECONFIG=$KUBECONFIG" >> $GITHUB_ENV
+          
+          echo "Testing connection..."
+          kubectl cluster-info || {
+            echo "Cannot connect to cluster"
+            echo "Current context:"
+            kubectl config current-context
+            echo "Available contexts:"
+            kubectl config get-contexts
+          }
       - name: Check pods
         id: monitor
-        env:
-          KUBECONFIG: /home/user/.kube/config-k8s
+        #env:
+        #  KUBECONFIG: /home/user/.kube/config-k8s
         run: |
           PROBLEM_PODS=$(kubectl get pods -A | grep -E "CrashLoopBackOff|Error|Evicted|Pending|ImagePullBackOff|CreateContainerError" || true)
           
@@ -31,7 +44,8 @@ jobs:
           fi
       
       - name: Send telegram alert
-        if: steps.monitor.outputs.has_errors == 'true'
+        if: always()
+        #if: steps.monitor.outputs.has_errors == 'true'
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
