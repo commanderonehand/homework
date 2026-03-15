@@ -1,0 +1,37 @@
+name: K8s Monitoring
+on:
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: self-hosted
+    steps:
+      - name: Check pods
+        id: monitor
+        run: |
+          PROBLEM_PODS=$(kubectl get pods -A | grep -E "CrashLoopBackOff|Error|Evicted|Pending|ImagePullBackOff|CreateContainerError" || true)
+          
+          if [ -n "$PROBLEM_PODS" ]; then
+            {
+              echo "has_errors=true"
+              echo "message<<EOF"
+              echo "Проблемные поды в кластере"
+              echo ""
+              echo "\`\`\`"
+              echo "$PROBLEM_PODS"
+              echo "\`\`\`"
+              echo ""
+              echo "$(date '+%H:%M %d.%m.%Y')"
+              echo "EOF"
+            } >> $GITHUB_OUTPUT
+          else
+            echo "has_errors=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Send telegram alert
+        if: steps.monitor.outputs.has_errors == 'true'
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: ${{ steps.monitor.outputs.message }}
