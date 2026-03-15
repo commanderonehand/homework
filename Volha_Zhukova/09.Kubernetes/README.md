@@ -73,3 +73,13 @@ container-engine/nerdctl : Download_file | Download item -----------------------
   250  kubectl get pods -A
   251  minikube stop
 ```
+## 3. GitHub Actions for KinD Cluster Setup
+```bash
+Run kubectl cluster-info
+Kubernetes control plane is running at https://127.0.0.1:37555
+CoreDNS is running at https://127.0.0.1:37555/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+NAME                        STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION      CONTAINER-RUNTIME
+hw3-cluster-control-plane   Ready    control-plane   22s   v1.32.2   172.18.0.2    <none>        Debian GNU/Linux 12 (bookworm)   6.14.0-1017-azure   containerd://2.0.2
+```
